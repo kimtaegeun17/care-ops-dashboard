@@ -19,7 +19,7 @@ function StatCard({ label, value, icon: Icon, color, onClick }: { label: string;
 }
 
 export default function DashboardScreen() {
-  const { stats, setScreen, dailyData, resetData } = useAppState();
+  const { stats, setScreen, dailyData, filtered, resetData } = useAppState();
   const today = new Date();
   const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -68,12 +68,12 @@ export default function DashboardScreen() {
             <button onClick={() => setScreen('activity')} className="text-xs text-primary hover:underline">전체보기 →</button>
           </div>
           <div className="max-h-64 overflow-auto">
-            {dailyData.activityMissing.length === 0 ? (
+            {filtered.activityMissing.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground text-center">데이터 없음</p>
             ) : (
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-border">
-                  {dailyData.activityMissing.slice(0, 5).map((c, i) => (
+                  {filtered.activityMissing.slice(0, 5).map((c, i) => (
                     <tr key={c.id} className={i % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
                       <td className="px-3 py-2 text-xs">{i + 1}</td>
                       <td className="px-3 py-2 text-xs font-semibold">{c.person.name}</td>
@@ -94,12 +94,12 @@ export default function DashboardScreen() {
             <button onClick={() => setScreen('device')} className="text-xs text-primary hover:underline">전체보기 →</button>
           </div>
           <div className="max-h-64 overflow-auto">
-            {dailyData.abnormalDevice.length === 0 ? (
+            {filtered.abnormalDevice.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground text-center">데이터 없음</p>
             ) : (
               <table className="w-full text-sm">
                 <tbody className="divide-y divide-border">
-                  {dailyData.abnormalDevice.slice(0, 5).map((c, i) => (
+                  {filtered.abnormalDevice.slice(0, 5).map((c, i) => (
                     <tr key={c.id} className={i % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
                       <td className="px-3 py-2 text-xs">{i + 1}</td>
                       <td className="px-3 py-2 text-xs">
