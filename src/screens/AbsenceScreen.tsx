@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useAppState } from '@/context/AppContext';
+import GwAsFilter, { filterByGwAs } from '@/components/GwAsFilter';
 import type { CaseRecord, ActionMethod, ActionResult } from '@/types/schema';
 
 const actionMethods: ActionMethod[] = ['전화확인', '방문확인', 'A/S접수', '119신고', '보호자연락', '기타'];
@@ -6,12 +8,18 @@ const actionResults: ActionResult[] = ['확인완료', '미확인', '조치완�
 
 export default function AbsenceScreen() {
   const { filtered, updateCase } = useAppState();
-  const cases = filtered.longAbsence;
+  const [gwAs, setGwAs] = useState('');
+  const cases = filterByGwAs(filtered.longAbsence, gwAs);
 
   return (
     <div className="p-6 animate-fade-in">
-      <h2 className="text-xl font-bold text-foreground mb-1">장기부재</h2>
-      <p className="text-sm text-muted-foreground mb-4">{cases.length}건</p>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-foreground mb-1">장기부재</h2>
+          <p className="text-sm text-muted-foreground">{cases.length}건</p>
+        </div>
+        <GwAsFilter cases={filtered.longAbsence} value={gwAs} onChange={setGwAs} />
+      </div>
 
       <div className="overflow-x-auto border border-border rounded-lg">
         <table className="w-full text-sm">

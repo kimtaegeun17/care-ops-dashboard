@@ -1,16 +1,15 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
-import { CaseRecord, DailyData, DashboardStats, AsRecord } from '@/types/schema';
+import { CaseRecord, DailyData, DashboardStats } from '@/types/schema';
 import { loadDailyData, saveDailyData, resetDailyData } from '@/lib/importEngine';
 import { getFilteredData } from '@/lib/dataFilters';
 
-type Screen = 'dashboard' | 'import' | 'activity' | 'outing' | 'absence' | 'device' | 'as' | 'export';
+type Screen = 'dashboard' | 'import' | 'activity' | 'outing' | 'absence' | 'device' | 'export';
 
 interface FilteredData {
   activityMissing: CaseRecord[];
   longOuting: CaseRecord[];
   longAbsence: CaseRecord[];
   abnormalDevice: CaseRecord[];
-  asRecords: AsRecord[];
 }
 
 interface AppState {
@@ -21,9 +20,6 @@ interface AppState {
   filtered: FilteredData;
   stats: DashboardStats;
   updateCase: (category: 'activityMissing' | 'longOuting' | 'longAbsence' | 'abnormalDevice', id: string, updates: Partial<CaseRecord>) => void;
-  addAsRecord: (record: AsRecord) => void;
-  updateAsRecord: (id: string, updates: Partial<AsRecord>) => void;
-  deleteAsRecord: (id: string) => void;
   resetData: () => void;
 }
 
@@ -33,12 +29,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentScreen, setScreen] = useState<Screen>('dashboard');
   const [dailyData, setDailyData] = useState<DailyData>(loadDailyData);
 
-  // Save to localStorage whenever data changes
   useEffect(() => {
     saveDailyData(dailyData);
   }, [dailyData]);
 
-  // Filtered data: 6h+ for activity/outing, gateway dedup for devices
   const filtered = useMemo(() => getFilteredData(dailyData), [dailyData]);
 
   const stats: DashboardStats = {
@@ -47,7 +41,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     longOuting: filtered.longOuting.length,
     longAbsence: filtered.longAbsence.length,
     abnormalDevice: filtered.abnormalDevice.length,
-    asCount: filtered.asRecords.length,
   };
 
   const updateCase = useCallback((
@@ -61,27 +54,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  const addAsRecord = useCallback((record: AsRecord) => {
-    setDailyData(prev => ({
-      ...prev,
-      asRecords: [...prev.asRecords, record],
-    }));
-  }, []);
-
-  const updateAsRecord = useCallback((id: string, updates: Partial<AsRecord>) => {
-    setDailyData(prev => ({
-      ...prev,
-      asRecords: prev.asRecords.map(r => r.id === id ? { ...r, ...updates } : r),
-    }));
-  }, []);
-
-  const deleteAsRecord = useCallback((id: string) => {
-    setDailyData(prev => ({
-      ...prev,
-      asRecords: prev.asRecords.filter(r => r.id !== id),
-    }));
-  }, []);
-
   const resetData = useCallback(() => {
     const empty = resetDailyData();
     setDailyData(empty);
@@ -90,7 +62,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider value={{
       currentScreen, setScreen, dailyData, setDailyData, filtered, stats,
-      updateCase, addAsRecord, updateAsRecord, deleteAsRecord, resetData,
+      updateCase, resetData,
     }}>
       {children}
     </AppContext.Provider>

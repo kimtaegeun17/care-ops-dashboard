@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useAppState } from '@/context/AppContext';
+import GwAsFilter, { filterByGwAs } from '@/components/GwAsFilter';
 import type { CaseRecord, ActionMethod, ActionResult } from '@/types/schema';
 
 const actionMethods: ActionMethod[] = ['전화확인', '방문확인', 'A/S접수', '119신고', '보호자연락', '기타'];
@@ -6,12 +8,18 @@ const actionResults: ActionResult[] = ['확인완료', '미확인', '조치완�
 
 export default function ActivityScreen() {
   const { filtered, updateCase } = useAppState();
-  const cases = filtered.activityMissing;
+  const [gwAs, setGwAs] = useState('');
+  const cases = filterByGwAs(filtered.activityMissing, gwAs);
 
   return (
     <div className="p-6 animate-fade-in">
-      <h2 className="text-xl font-bold text-foreground mb-1">활동미감지 6시간 이상</h2>
-      <p className="text-sm text-muted-foreground mb-4">{cases.length}건</p>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-foreground mb-1">활동미감지 6시간 이상</h2>
+          <p className="text-sm text-muted-foreground">{cases.length}건</p>
+        </div>
+        <GwAsFilter cases={filtered.activityMissing} value={gwAs} onChange={setGwAs} />
+      </div>
 
       <div className="overflow-x-auto border border-border rounded-lg">
         <table className="w-full text-sm">
@@ -52,32 +60,19 @@ function CaseRow({ c, index, updateCase }: { c: CaseRecord; index: number; updat
       <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.detectedTime}</td>
       <td className="px-2 py-2 text-xs font-medium text-danger whitespace-nowrap">{c.elapsedTime}</td>
       <td className="px-2 py-2">
-        <select
-          value={c.actionMethod}
-          onChange={e => updateCase(c.id, { actionMethod: e.target.value as ActionMethod })}
-          className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground"
-        >
+        <select value={c.actionMethod} onChange={e => updateCase(c.id, { actionMethod: e.target.value as ActionMethod })} className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground">
           <option value="">선택</option>
           {actionMethods.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
       </td>
       <td className="px-2 py-2">
-        <select
-          value={c.result}
-          onChange={e => updateCase(c.id, { result: e.target.value as ActionResult })}
-          className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground"
-        >
+        <select value={c.result} onChange={e => updateCase(c.id, { result: e.target.value as ActionResult })} className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground">
           <option value="">선택</option>
           {actionResults.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
       </td>
       <td className="px-2 py-2">
-        <input
-          value={c.note}
-          onChange={e => updateCase(c.id, { note: e.target.value })}
-          placeholder="비고"
-          className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground w-20"
-        />
+        <input value={c.note} onChange={e => updateCase(c.id, { note: e.target.value })} placeholder="비고" className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground w-20" />
       </td>
     </tr>
   );
