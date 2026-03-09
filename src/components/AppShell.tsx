@@ -6,7 +6,6 @@ import ActivityScreen from '@/screens/ActivityScreen';
 import OutingScreen from '@/screens/OutingScreen';
 import AbsenceScreen from '@/screens/AbsenceScreen';
 import DeviceScreen from '@/screens/DeviceScreen';
-import AsScreen from '@/screens/AsScreen';
 import ExportScreen from '@/screens/ExportScreen';
 
 const screenMap = {
@@ -16,7 +15,6 @@ const screenMap = {
   outing: OutingScreen,
   absence: AbsenceScreen,
   device: DeviceScreen,
-  as: AsScreen,
   export: ExportScreen,
 };
 

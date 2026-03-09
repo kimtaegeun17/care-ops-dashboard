@@ -1,6 +1,6 @@
 import { useAppState } from '@/context/AppContext';
 import { 
-  LayoutDashboard, Upload, Activity, Clock, CalendarOff, Wrench, Settings, Printer
+  LayoutDashboard, Upload, Activity, Clock, CalendarOff, Wrench, Printer
 } from 'lucide-react';
 
 const navItems = [
@@ -10,7 +10,6 @@ const navItems = [
   { id: 'outing' as const, label: '장기외출', icon: Clock, badge: 'longOuting' as const },
   { id: 'absence' as const, label: '장기부재', icon: CalendarOff, badge: 'longAbsence' as const },
   { id: 'device' as const, label: '비정상장비', icon: Wrench, badge: 'abnormalDevice' as const },
-  { id: 'as' as const, label: 'A/S 관리', icon: Settings },
   { id: 'export' as const, label: '인쇄/내보내기', icon: Printer },
 ];
 

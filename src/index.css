@@ -100,9 +100,8 @@
     display: none;
   }
 
-  /* Print table cells */
   .print-cell {
-    @apply px-1.5 py-1 border border-border text-xs;
+    @apply px-1 py-0.5 border border-border text-xs;
   }
 
   .print-table {
@@ -121,7 +120,7 @@
   }
 
   body {
-    font-size: 8pt;
+    font-size: 7pt;
     background: white;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -134,9 +133,10 @@
   }
 
   .print-cell {
-    padding: 2px 4px;
+    padding: 1px 3px;
     border: 0.5pt solid #ccc;
-    font-size: 7pt;
+    font-size: 6.5pt;
+    line-height: 1.2;
   }
 
   table {
@@ -148,9 +148,8 @@
     page-break-after: auto;
   }
 
-  /* Force landscape for wide tables */
   @page {
     size: landscape;
-    margin: 8mm;
+    margin: 6mm;
   }
 }

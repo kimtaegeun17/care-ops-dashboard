@@ -1,5 +1,5 @@
 import { useAppState } from '@/context/AppContext';
-import { AlertTriangle, Activity, Clock, CalendarOff, Wrench, RefreshCw } from 'lucide-react';
+import { Activity, Clock, CalendarOff, Wrench, RefreshCw } from 'lucide-react';
 
 function StatCard({ label, value, icon: Icon, color, onClick }: { label: string; value: number; icon: any; color: string; onClick?: () => void }) {
   return (
@@ -51,12 +51,11 @@ export default function DashboardScreen() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="활동미감지 6시간↑" value={stats.activityMissing} icon={Activity} color="bg-danger/10 text-danger" onClick={() => setScreen('activity')} />
         <StatCard label="장기외출" value={stats.longOuting} icon={Clock} color="bg-warning/10 text-warning" onClick={() => setScreen('outing')} />
         <StatCard label="장기부재" value={stats.longAbsence} icon={CalendarOff} color="bg-status-long-absence/10 text-status-long-absence" onClick={() => setScreen('absence')} />
         <StatCard label="비정상장비" value={stats.abnormalDevice} icon={Wrench} color="bg-info/10 text-info" onClick={() => setScreen('device')} />
-        <StatCard label="A/S 관리" value={stats.asCount} icon={AlertTriangle} color="bg-muted text-muted-foreground" onClick={() => setScreen('as')} />
       </div>
 
       {/* Quick preview tables */}
