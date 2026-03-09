@@ -2,22 +2,22 @@ import { useAppState } from '@/context/AppContext';
 import Sidebar from './Sidebar';
 import DashboardScreen from '@/screens/DashboardScreen';
 import ImportScreen from '@/screens/ImportScreen';
-import UnifiedTableScreen from '@/screens/UnifiedTableScreen';
-import StaffScreen from '@/screens/StaffScreen';
+import ActivityScreen from '@/screens/ActivityScreen';
+import OutingScreen from '@/screens/OutingScreen';
 import AbsenceScreen from '@/screens/AbsenceScreen';
 import DeviceScreen from '@/screens/DeviceScreen';
+import AsScreen from '@/screens/AsScreen';
 import ExportScreen from '@/screens/ExportScreen';
-import SnapshotScreen from '@/screens/SnapshotScreen';
 
 const screenMap = {
   dashboard: DashboardScreen,
   import: ImportScreen,
-  unified: UnifiedTableScreen,
-  staff: StaffScreen,
+  activity: ActivityScreen,
+  outing: OutingScreen,
   absence: AbsenceScreen,
   device: DeviceScreen,
+  as: AsScreen,
   export: ExportScreen,
-  snapshots: SnapshotScreen,
 };
 
 export default function AppShell() {

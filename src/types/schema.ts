@@ -5,13 +5,12 @@ export type StatusCategory = '활동미감지' | '장기외출' | '장기부재'
 export type DeviceTag =
   | '게이트웨이 전원차단'
   | '게이트웨이 미수신'
-  | '활동센서1 연결불량'
-  | '활동센서2 통신불량'
-  | '화재감지센서 통신불량'
-  | '출입문감지센서 통신불량'
-  | '호출기 통신불량'
-  | '레이더 전원차단'
-  | '레이더 통신불량';
+  | '활동센서1 불량'
+  | '활동센서2 불량'
+  | '화재센서 불량'
+  | '출입문센서 불량'
+  | '호출기센서 불량'
+  | '레이더센서 불량';
 
 export type PriorityLevel = 'critical' | 'high' | 'medium' | 'low' | 'normal';
 
@@ -38,47 +37,56 @@ export interface Person {
   name: string;
   birthDate: string;
   phone: string;
+  homePhone?: string;
   address: string;
-  region: string;       // 권역
+  region: string;       // 권역/면
   staff: string;        // 담당자
   gwNumber?: string;    // G/W번호
+  order?: string;       // 차수 (20년 댁내, 21년 댁내 등)
 }
 
 export interface CaseRecord {
   id: string;
-  snapshotId: string;
   person: Person;
-  statuses: StatusCategory[];
-  deviceTags: DeviceTag[];
-  detailText: string;       // 세부이상
-  firstDetected: string;    // 최초감지시각
-  elapsedTime: string;      // 경과시간
+  category: StatusCategory;
+  deviceTag?: DeviceTag;       // For 비정상장비 only
+  detectedTime: string;        // 시작시각/시작일
+  elapsedTime: string;         // 지속시간
   elapsedMinutes: number;
-  priority: PriorityLevel;
-  priorityScore: number;
+  gwAs?: string;               // G/W AS (AS중 등)
   actionMethod: ActionMethod | '';
   result: ActionResult | '';
-  note: string;             // 비고
-  asStatus?: string;        // A/S status
-  absenceDays?: number;     // 장기부재 경과일
-  isNew?: boolean;          // new since last snapshot
-  isResolved?: boolean;     // resolved since last snapshot
-  isOngoing?: boolean;      // ongoing from last snapshot
+  note: string;
 }
 
-export interface Snapshot {
+// A/S 관리 레코드 (Page 2 of real excel)
+export interface AsRecord {
   id: string;
-  date: string;        // YYYY-MM-DD
-  time: string;        // HH:MM
-  period: 'AM' | 'PM';
-  createdAt: string;
-  importedFiles: ImportedFile[];
-  caseCount: number;
+  order: string;               // 차수
+  region: string;              // 면 (용문면, 지평면 등)
+  name: string;                // 대상자
+  birthDate: string;           // 생년월일
+  gwNumber: string;            // G/W번호
+  deviceName: string;          // 장비명 (게이트웨이, 레이더센서, 화재감지기 등)
+  detail: string;              // 세부사항
+  asReceiveDate: string;       // as입고일자
+  deliveryRequestDate: string; // 택배발송&요청일자
+  installCompleteDate: string; // 설치완료일자/도착일자
+  installNote: string;         // 설치비고
+  supplyCount: string;         // 보급완료갯수확인
+}
+
+export interface DailyData {
+  date: string;              // YYYY-MM-DD
+  lastUpdated: string;       // ISO timestamp
+  activityMissing: CaseRecord[];  // 활동미감지 6시간 이상
+  longOuting: CaseRecord[];       // 장기외출
+  longAbsence: CaseRecord[];      // 장기부재
+  abnormalDevice: CaseRecord[];   // 비정상장비
+  asRecords: AsRecord[];          // A/S 관리
 }
 
 export interface ImportedFile {
-  id: string;
-  snapshotId: string;
   fileName: string;
   fileType: FileType;
   rowCount: number;
@@ -91,36 +99,5 @@ export interface DashboardStats {
   longOuting: number;
   longAbsence: number;
   abnormalDevice: number;
-  criticalCount: number;
-  highCount: number;
-  resolvedToday: number;
-  pendingAction: number;
-}
-
-export interface StaffSummary {
-  staff: string;
-  region: string;
-  totalCases: number;
-  criticalCases: number;
-  completedCases: number;
-  pendingCases: number;
-}
-
-// Unified output row (for table display)
-export interface UnifiedRow {
-  순번: number;
-  권역: string;
-  담당자: string;
-  대상자명: string;
-  생년월일: string;
-  연락처: string;
-  주소: string;
-  상태구분: string;
-  세부이상: string;
-  최초감지시각: string;
-  경과시간: string;
-  우선순위: string;
-  조치방법: string;
-  결과: string;
-  비고: string;
+  asCount: number;
 }

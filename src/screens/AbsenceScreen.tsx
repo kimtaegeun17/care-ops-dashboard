@@ -1,71 +1,71 @@
-import { useMemo } from 'react';
 import { useAppState } from '@/context/AppContext';
-import { PriorityBadge } from '@/components/Badges';
+import type { CaseRecord, ActionMethod, ActionResult } from '@/types/schema';
+
+const actionMethods: ActionMethod[] = ['전화확인', '방문확인', 'A/S접수', '119신고', '보호자연락', '기타'];
+const actionResults: ActionResult[] = ['확인완료', '미확인', '조치완료', '조치중', '대기'];
 
 export default function AbsenceScreen() {
-  const { cases, updateCase } = useAppState();
-
-  const absenceCases = useMemo(
-    () => cases.filter(c => c.statuses.includes('장기부재') || c.statuses.includes('장기외출'))
-      .sort((a, b) => (b.absenceDays || b.elapsedMinutes / 1440) - (a.absenceDays || a.elapsedMinutes / 1440)),
-    [cases]
-  );
+  const { dailyData, updateCase } = useAppState();
+  const cases = dailyData.longAbsence;
 
   return (
     <div className="p-6 animate-fade-in">
-      <h2 className="text-xl font-bold text-foreground mb-2">장기부재 관리표</h2>
-      <p className="text-sm text-muted-foreground mb-6">장기부재 및 장기외출 대상자 {absenceCases.length}명</p>
+      <h2 className="text-xl font-bold text-foreground mb-1">장기부재</h2>
+      <p className="text-sm text-muted-foreground mb-4">{cases.length}건</p>
 
       <div className="overflow-x-auto border border-border rounded-lg">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-table-header text-table-header-foreground">
-              {['순번','권역','담당자','대상자명','생년월일','연락처','상태','경과일수','최초감지','우선순위','비고'].map(h => (
-                <th key={h} className="px-3 py-2.5 text-left text-xs font-bold whitespace-nowrap">{h}</th>
+              {['', '대상자명', '생년월일', '도로명주소', '핸드폰번호', '게이트웨이번호', '차수', 'G/W AS', '시작일', '지속기간', '조치방법', '결과', '비고'].map(h => (
+                <th key={h} className="px-2 py-2 text-left text-xs font-bold whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {absenceCases.map((c, i) => {
-              const days = c.absenceDays || Math.floor(c.elapsedMinutes / 1440);
-              return (
-                <tr key={c.id} className={`${i % 2 === 0 ? 'bg-table-row-alt' : 'bg-card'} hover:bg-table-row-hover`}>
-                  <td className="px-3 py-2 text-xs">{i + 1}</td>
-                  <td className="px-3 py-2 text-xs">{c.person.region}</td>
-                  <td className="px-3 py-2 text-xs">{c.person.staff}</td>
-                  <td className="px-3 py-2 text-xs font-semibold text-foreground">{c.person.name}</td>
-                  <td className="px-3 py-2 text-xs text-muted-foreground">{c.person.birthDate}</td>
-                  <td className="px-3 py-2 text-xs text-muted-foreground">{c.person.phone}</td>
-                  <td className="px-3 py-2 text-xs">
-                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                      c.statuses.includes('장기부재')
-                        ? 'bg-status-long-absence/15 text-status-long-absence'
-                        : 'bg-status-long-outing/15 text-status-long-outing'
-                    }`}>
-                      {c.statuses.includes('장기부재') ? '장기부재' : '장기외출'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-xs font-bold text-foreground">
-                    <span className={days >= 7 ? 'text-danger' : days >= 3 ? 'text-warning' : 'text-foreground'}>
-                      {days}일
-                    </span>
-                  </td>
-                  <td className="px-3 py-2 text-xs text-muted-foreground">{c.firstDetected}</td>
-                  <td className="px-3 py-2"><PriorityBadge level={c.priority} /></td>
-                  <td className="px-3 py-2">
-                    <input
-                      value={c.note}
-                      onChange={e => updateCase(c.id, { note: e.target.value })}
-                      placeholder="비고"
-                      className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground w-28"
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {cases.map((c, i) => (
+              <CaseRow key={c.id} c={c} index={i + 1} updateCase={(id, u) => updateCase('longAbsence', id, u)} />
+            ))}
+            {cases.length === 0 && (
+              <tr><td colSpan={13} className="px-4 py-8 text-center text-muted-foreground">데이터 없음</td></tr>
+            )}
           </tbody>
         </table>
       </div>
     </div>
+  );
+}
+
+function CaseRow({ c, index, updateCase }: { c: CaseRecord; index: number; updateCase: (id: string, u: Partial<CaseRecord>) => void }) {
+  const days = c.elapsedTime.match(/(\d+)일/)?.[1] || '';
+  const isLong = parseInt(days) >= 30;
+  return (
+    <tr className={`${index % 2 === 0 ? 'bg-table-row-alt' : 'bg-card'} hover:bg-table-row-hover transition-colors`}>
+      <td className="px-2 py-2 text-xs text-foreground">{index}</td>
+      <td className="px-2 py-2 text-xs font-semibold text-foreground whitespace-nowrap">{c.person.name}</td>
+      <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.person.birthDate}</td>
+      <td className="px-2 py-2 text-xs text-foreground max-w-[180px] truncate">{c.person.address}</td>
+      <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.person.phone}</td>
+      <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.person.gwNumber}</td>
+      <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.person.order}</td>
+      <td className="px-2 py-2 text-xs">{c.gwAs && <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-warning/15 text-warning">{c.gwAs}</span>}</td>
+      <td className="px-2 py-2 text-xs text-muted-foreground whitespace-nowrap">{c.detectedTime}</td>
+      <td className={`px-2 py-2 text-xs font-medium whitespace-nowrap ${isLong ? 'text-danger' : 'text-status-long-absence'}`}>{c.elapsedTime}</td>
+      <td className="px-2 py-2">
+        <select value={c.actionMethod} onChange={e => updateCase(c.id, { actionMethod: e.target.value as ActionMethod })} className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground">
+          <option value="">선택</option>
+          {actionMethods.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
+      </td>
+      <td className="px-2 py-2">
+        <select value={c.result} onChange={e => updateCase(c.id, { result: e.target.value as ActionResult })} className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground">
+          <option value="">선택</option>
+          {actionResults.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
+      </td>
+      <td className="px-2 py-2">
+        <input value={c.note} onChange={e => updateCase(c.id, { note: e.target.value })} placeholder="비고" className="text-xs px-1.5 py-1 border border-input rounded bg-card text-foreground w-20" />
+      </td>
+    </tr>
   );
 }
