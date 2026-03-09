@@ -3,23 +3,23 @@ import { exportToExcel, printTable } from '@/lib/exportEngine';
 import { Printer, FileSpreadsheet } from 'lucide-react';
 
 export default function ExportScreen() {
-  const { dailyData } = useAppState();
+  const { filtered } = useAppState();
   const today = new Date();
   const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
   const allCases = [
-    ...dailyData.activityMissing,
-    ...dailyData.longOuting,
-    ...dailyData.longAbsence,
-    ...dailyData.abnormalDevice,
+    ...filtered.activityMissing,
+    ...filtered.longOuting,
+    ...filtered.longAbsence,
+    ...filtered.abnormalDevice,
   ];
 
   const exports = [
     { label: '전체 일일점검현황', desc: '모든 대상자', data: allCases, filename: `일일점검현황_${dateStr}` },
-    { label: '활동미감지', desc: '6시간 이상', data: dailyData.activityMissing, filename: `활동미감지_${dateStr}` },
-    { label: '장기외출', desc: '장기외출 대상자', data: dailyData.longOuting, filename: `장기외출_${dateStr}` },
-    { label: '장기부재', desc: '장기부재 대상자', data: dailyData.longAbsence, filename: `장기부재_${dateStr}` },
-    { label: '비정상장비', desc: '장비 이상', data: dailyData.abnormalDevice, filename: `비정상장비_${dateStr}` },
+    { label: '활동미감지', desc: '6시간 이상', data: filtered.activityMissing, filename: `활동미감지_${dateStr}` },
+    { label: '장기외출', desc: '6시간 이상', data: filtered.longOuting, filename: `장기외출_${dateStr}` },
+    { label: '장기부재', desc: '장기부재 대상자', data: filtered.longAbsence, filename: `장기부재_${dateStr}` },
+    { label: '비정상장비', desc: '장비 이상', data: filtered.abnormalDevice, filename: `비정상장비_${dateStr}` },
   ];
 
   return (
