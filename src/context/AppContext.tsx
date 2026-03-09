@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { CaseRecord, DailyData, DashboardStats, AsRecord } from '@/types/schema';
 import { loadDailyData, saveDailyData, resetDailyData } from '@/lib/importEngine';
+import { getFilteredData } from '@/lib/dataFilters';
 
 type Screen = 'dashboard' | 'import' | 'activity' | 'outing' | 'absence' | 'device' | 'as' | 'export';
 
@@ -28,13 +29,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveDailyData(dailyData);
   }, [dailyData]);
 
+  // Filtered data: 6h+ for activity/outing, gateway dedup for devices
+  const filtered = useMemo(() => getFilteredData(dailyData), [dailyData]);
+
   const stats: DashboardStats = {
-    totalCases: dailyData.activityMissing.length + dailyData.longOuting.length + dailyData.longAbsence.length + dailyData.abnormalDevice.length,
-    activityMissing: dailyData.activityMissing.length,
-    longOuting: dailyData.longOuting.length,
-    longAbsence: dailyData.longAbsence.length,
-    abnormalDevice: dailyData.abnormalDevice.length,
-    asCount: dailyData.asRecords.length,
+    totalCases: filtered.activityMissing.length + filtered.longOuting.length + filtered.longAbsence.length + filtered.abnormalDevice.length,
+    activityMissing: filtered.activityMissing.length,
+    longOuting: filtered.longOuting.length,
+    longAbsence: filtered.longAbsence.length,
+    abnormalDevice: filtered.abnormalDevice.length,
+    asCount: filtered.asRecords.length,
   };
 
   const updateCase = useCallback((
