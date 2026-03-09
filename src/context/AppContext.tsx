@@ -5,11 +5,20 @@ import { getFilteredData } from '@/lib/dataFilters';
 
 type Screen = 'dashboard' | 'import' | 'activity' | 'outing' | 'absence' | 'device' | 'as' | 'export';
 
+interface FilteredData {
+  activityMissing: CaseRecord[];
+  longOuting: CaseRecord[];
+  longAbsence: CaseRecord[];
+  abnormalDevice: CaseRecord[];
+  asRecords: AsRecord[];
+}
+
 interface AppState {
   currentScreen: Screen;
   setScreen: (s: Screen) => void;
   dailyData: DailyData;
   setDailyData: React.Dispatch<React.SetStateAction<DailyData>>;
+  filtered: FilteredData;
   stats: DashboardStats;
   updateCase: (category: 'activityMissing' | 'longOuting' | 'longAbsence' | 'abnormalDevice', id: string, updates: Partial<CaseRecord>) => void;
   addAsRecord: (record: AsRecord) => void;
@@ -80,7 +89,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      currentScreen, setScreen, dailyData, setDailyData, stats,
+      currentScreen, setScreen, dailyData, setDailyData, filtered, stats,
       updateCase, addAsRecord, updateAsRecord, deleteAsRecord, resetData,
     }}>
       {children}
