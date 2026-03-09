@@ -99,5 +99,4 @@ export interface DashboardStats {
   longOuting: number;
   longAbsence: number;
   abnormalDevice: number;
-  asCount: number;
 }
