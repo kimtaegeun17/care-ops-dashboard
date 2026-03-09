@@ -99,23 +99,58 @@
   .print-only {
     display: none;
   }
+
+  /* Print table cells */
+  .print-cell {
+    @apply px-1.5 py-1 border border-border text-xs;
+  }
+
+  .print-table {
+    border-collapse: collapse;
+  }
 }
 
 @media print {
-  .no-print {
+  .no-print,
+  aside,
+  nav {
     display: none !important;
   }
   .print-only {
     display: block !important;
   }
+
   body {
-    font-size: 10pt;
+    font-size: 8pt;
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
+
+  .print-area {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-cell {
+    padding: 2px 4px;
+    border: 0.5pt solid #ccc;
+    font-size: 7pt;
+  }
+
   table {
     page-break-inside: auto;
+    width: 100%;
   }
   tr {
     page-break-inside: avoid;
     page-break-after: auto;
+  }
+
+  /* Force landscape for wide tables */
+  @page {
+    size: landscape;
+    margin: 8mm;
   }
 }
