@@ -1,5 +1,6 @@
 import { useAppState } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
+import { extractDistrict, sortByDistrict } from '@/lib/addressUtils';
 import { Printer, FileSpreadsheet } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
@@ -9,12 +10,14 @@ export default function ExportScreen() {
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const dateLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}.(${dayNames[today.getDay()]})`;
 
+  const sortedDevices = sortByDistrict(filtered.abnormalDevice);
+
   const handleExport = () => {
     exportFullReport(
       filtered.activityMissing,
       filtered.longOuting,
       filtered.longAbsence,
-      filtered.abnormalDevice,
+      sortedDevices,
       dateLabel
     );
   };
@@ -62,8 +65,7 @@ export default function ExportScreen() {
           headerColor="bg-status-long-absence/10"
         />
 
-        {/* 비정상장비 - horizontal compact layout, no address */}
-        <DeviceTable cases={filtered.abnormalDevice} />
+        <DeviceTable cases={sortedDevices} />
       </div>
     </div>
   );
@@ -104,7 +106,7 @@ function SectionTable({ sectionTitle, columns, cases, headerColor }: {
                 <td className="print-cell text-center">{i + 1}</td>
                 <td className="print-cell font-semibold whitespace-nowrap">{c.person.name}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.birthDate}</td>
-                <td className="print-cell max-w-[180px] truncate">{c.person.address}</td>
+                <td className="print-cell whitespace-nowrap">{extractDistrict(c.person.address)}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.phone}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.gwNumber}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.order}</td>
@@ -120,7 +122,7 @@ function SectionTable({ sectionTitle, columns, cases, headerColor }: {
   );
 }
 
-/** 비정상장비: no address column, horizontal compact rows with G/W AS */
+/** 비정상장비: with 도로명주소(읍면), sorted by district */
 function DeviceTable({ cases }: { cases: CaseRecord[] }) {
   return (
     <div className="border-b border-border">
@@ -128,7 +130,7 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
         <thead>
           <tr className="bg-info/10">
             <th className="print-cell font-bold text-foreground text-left" colSpan={2}>비정상장비</th>
-            <th className="print-cell text-muted-foreground text-left" colSpan={3}>대상자정보</th>
+            <th className="print-cell text-muted-foreground text-left" colSpan={4}>대상자정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={3}>장비정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>이상정보</th>
           </tr>
@@ -137,6 +139,7 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
             <th className="print-cell text-left font-semibold">장비이상</th>
             <th className="print-cell text-left font-semibold">대상자명</th>
             <th className="print-cell text-left font-semibold">생년월일</th>
+            <th className="print-cell text-left font-semibold">도로명주소</th>
             <th className="print-cell text-left font-semibold">핸드폰번호</th>
             <th className="print-cell text-left font-semibold">G/W번호</th>
             <th className="print-cell text-left font-semibold">차수</th>
@@ -147,7 +150,7 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
         </thead>
         <tbody>
           {cases.length === 0 ? (
-            <tr><td colSpan={10} className="print-cell text-center text-muted-foreground py-1">데이터 없음</td></tr>
+            <tr><td colSpan={11} className="print-cell text-center text-muted-foreground py-1">데이터 없음</td></tr>
           ) : (
             cases.map((c, i) => (
               <tr key={c.id} className={i % 2 === 0 ? '' : 'bg-muted/20'}>
@@ -155,6 +158,7 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
                 <td className="print-cell whitespace-nowrap">{c.deviceTag || '-'}</td>
                 <td className="print-cell font-semibold whitespace-nowrap">{c.person.name}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.birthDate}</td>
+                <td className="print-cell whitespace-nowrap">{extractDistrict(c.person.address)}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.phone}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.gwNumber}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.order}</td>
