@@ -120,7 +120,7 @@
   }
 
   body {
-    font-size: 7pt;
+    font-size: 9pt;
     background: white;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -135,7 +135,7 @@
   .print-cell {
     padding: 1px 3px;
     border: 0.5pt solid #ccc;
-    font-size: 6.5pt;
+    font-size: 8.5pt;
     line-height: 1.2;
   }
 
