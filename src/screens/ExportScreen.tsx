@@ -10,7 +10,7 @@ export default function ExportScreen() {
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const dateLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}.(${dayNames[today.getDay()]})`;
 
-  const sortedDevices = sortByDistrict(filtered.abnormalDevice);
+  const sortedDevices = sortByDeviceThenName(filtered.abnormalDevice);
 
   const handleExport = () => {
     exportFullReport(
