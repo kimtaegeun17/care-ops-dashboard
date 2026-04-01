@@ -144,13 +144,13 @@ export function processFiles(
 
     let detectedTime = '';
     let durationStr = '';
-    let gwAs = '';
+    // Always try to read G/W AS from every file type
+    let gwAs = findCol(row, 'G/W AS', 'GW AS', 'GWAS');
 
     switch (fileType) {
       case '활동미감지':
         detectedTime = findCol(row, '활동미감지\n시작시각', '활동미감지시작시각', '시작시각');
         durationStr = findCol(row, '활동미감지\n지속시간', '활동미감지지속시간', '지속시간');
-        gwAs = findCol(row, 'G/W AS');
         break;
       case '외출중':
         detectedTime = findCol(row, '외출\n시작시각', '외출시작시각', '시작시각');
@@ -163,7 +163,6 @@ export function processFiles(
       case '게이트웨이_전원차단':
         detectedTime = findCol(row, '전원차단\n시작시각', '전원차단시작시각', '시작시각');
         durationStr = findCol(row, '전원차단\n지속시간', '전원차단지속시간', '지속시간');
-        gwAs = findCol(row, 'G/W AS');
         break;
       case '레이더센서_전원차단':
         detectedTime = findCol(row, '레이더센서(호흡)\n전원상태 수신시간', '수신시간');
