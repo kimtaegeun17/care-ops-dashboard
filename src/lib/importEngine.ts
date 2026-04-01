@@ -205,7 +205,7 @@ export function processFiles(
       : category === '장기부재' ? existingData.longAbsence
       : existingData.abnormalDevice;
 
-    const existingIdx = targetList.findIndex(r => r.person.name === name && r.person.birthDate === person.birthDate);
+    const existingIdx = targetList.findIndex(r => r.person.name === name && r.person.birthDate === person.birthDate && r.deviceTag === tag);
     if (existingIdx >= 0) {
       // Update existing with longer duration / earlier time
       const existing = targetList[existingIdx];
