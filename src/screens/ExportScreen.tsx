@@ -1,6 +1,6 @@
 import { useAppState } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
-import { extractDistrict, sortByDistrict } from '@/lib/addressUtils';
+import { extractDistrict, sortByDeviceThenName } from '@/lib/addressUtils';
 import { Printer, FileSpreadsheet } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
