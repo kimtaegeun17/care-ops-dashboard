@@ -193,7 +193,7 @@ export function processFiles(
       detectedTime,
       elapsedTime: durationStr,
       elapsedMinutes: parseElapsedToMinutes(durationStr),
-      gwAs: gwAs && gwAs.includes('AS') ? gwAs : undefined,
+      gwAs: gwAs || undefined,
       actionMethod: '',
       result: '',
       note: '',
