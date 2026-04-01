@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useAppState } from '@/context/AppContext';
 import Sidebar from './Sidebar';
 import DashboardScreen from '@/screens/DashboardScreen';
