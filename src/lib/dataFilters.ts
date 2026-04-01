@@ -11,15 +11,20 @@ export function filterOuting6h(cases: CaseRecord[]): CaseRecord[] {
 }
 
 export function deduplicateDevices(cases: CaseRecord[]): CaseRecord[] {
+  // Collect person keys that have gateway issues
   const gwPersonKeys = new Set<string>();
   for (const c of cases) {
-    if (c.deviceTag === '게이트웨이 전원차단') {
+    if (c.deviceTag === '게이트웨이 전원차단' || c.deviceTag === '게이트웨이 미수신') {
       gwPersonKeys.add(`${c.person.name}_${c.person.birthDate}`);
     }
   }
   return cases.filter(c => {
     const key = `${c.person.name}_${c.person.birthDate}`;
-    if (gwPersonKeys.has(key) && c.deviceTag !== '게이트웨이 전원차단') {
+    // If person has a gateway issue, hide non-gateway non-radar sensor entries
+    if (gwPersonKeys.has(key)
+      && c.deviceTag !== '게이트웨이 전원차단'
+      && c.deviceTag !== '게이트웨이 미수신'
+      && c.deviceTag !== '레이더센서 불량') {
       return false;
     }
     return true;
