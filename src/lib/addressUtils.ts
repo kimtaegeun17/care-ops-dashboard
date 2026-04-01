@@ -22,3 +22,31 @@ export function sortByDistrict<T extends { person: { address: string } }>(cases:
     return da.localeCompare(db, 'ko');
   });
 }
+
+/**
+ * Device tag priority order (게이트웨이 first).
+ */
+const DEVICE_TAG_ORDER: string[] = [
+  '게이트웨이 전원차단',
+  '게이트웨이 미수신',
+  '활동센서1 불량',
+  '활동센서2 불량',
+  '화재센서 불량',
+  '출입문센서 불량',
+  '호출기센서 불량',
+  '레이더센서 불량',
+];
+
+/**
+ * Sort by deviceTag (gateway first) then by person name.
+ */
+export function sortByDeviceThenName<T extends { deviceTag?: string; person: { name: string } }>(cases: T[]): T[] {
+  return [...cases].sort((a, b) => {
+    const ia = DEVICE_TAG_ORDER.indexOf(a.deviceTag || '');
+    const ib = DEVICE_TAG_ORDER.indexOf(b.deviceTag || '');
+    const oa = ia >= 0 ? ia : 999;
+    const ob = ib >= 0 ? ib : 999;
+    if (oa !== ob) return oa - ob;
+    return a.person.name.localeCompare(b.person.name, 'ko');
+  });
+}

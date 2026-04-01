@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import type { CaseRecord } from '@/types/schema';
-import { extractDistrict, sortByDistrict } from '@/lib/addressUtils';
+import { extractDistrict, sortByDeviceThenName } from '@/lib/addressUtils';
 
 export function exportFullReport(
   activityMissing: CaseRecord[],
@@ -34,7 +34,7 @@ export function exportFullReport(
   });
 
   // 비정상장비 - with address (district only), sorted by district
-  const sortedDevices = sortByDistrict(abnormalDevice);
+  const sortedDevices = sortByDeviceThenName(abnormalDevice);
   ws1Data.push(['비', '장비이상', '대상자명', '생년월일', '도로명주소', '핸드폰번호', 'G/W번호', '차수', 'G/W AS', '시작시각', '지속시간']);
   sortedDevices.forEach((c) => {
     ws1Data.push(['비', c.deviceTag || '', c.person.name, c.person.birthDate, extractDistrict(c.person.address), c.person.phone, c.person.gwNumber || '', c.person.order || '', c.gwAs || '', c.detectedTime, c.elapsedTime]);
