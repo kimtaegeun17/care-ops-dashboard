@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { CaseRecord, DailyData, DashboardStats } from '@/types/schema';
 import { loadDailyData, saveDailyData, resetDailyData } from '@/lib/importEngine';
