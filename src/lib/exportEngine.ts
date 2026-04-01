@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import type { CaseRecord } from '@/types/schema';
-import { extractDistrict, sortByDeviceThenName } from '@/lib/addressUtils';
+import { extractDistrict } from '@/lib/addressUtils';
 
 export function exportFullReport(
   activityMissing: CaseRecord[],
