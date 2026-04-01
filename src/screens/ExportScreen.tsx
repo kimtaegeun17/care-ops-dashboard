@@ -1,6 +1,6 @@
 import { useAppState } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
-import { extractDistrict, sortByDeviceThenName } from '@/lib/addressUtils';
+import { extractDistrict } from '@/lib/addressUtils';
 import { Printer, FileSpreadsheet } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
@@ -10,7 +10,7 @@ export default function ExportScreen() {
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const dateLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}.(${dayNames[today.getDay()]})`;
 
-  const sortedDevices = sortByDeviceThenName(filtered.abnormalDevice);
+  const sortedDevices = [...filtered.abnormalDevice].sort((a, b) => a.person.name.localeCompare(b.person.name, 'ko'));
 
   const handleExport = () => {
     exportFullReport(
