@@ -20,11 +20,10 @@ export function deduplicateDevices(cases: CaseRecord[]): CaseRecord[] {
   }
   return cases.filter(c => {
     const key = `${c.person.name}_${c.person.birthDate}`;
-    // If person has a gateway issue, hide non-gateway non-radar sensor entries
+    // If person has a gateway issue, only keep gateway entries (hide all sensor entries including radar)
     if (gwPersonKeys.has(key)
       && c.deviceTag !== '게이트웨이 전원차단'
-      && c.deviceTag !== '게이트웨이 미수신'
-      && c.deviceTag !== '레이더센서 불량') {
+      && c.deviceTag !== '게이트웨이 미수신') {
       return false;
     }
     return true;
