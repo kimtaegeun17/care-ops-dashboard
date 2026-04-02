@@ -50,3 +50,31 @@ export function sortByDeviceThenName<T extends { deviceTag?: string; person: { n
     return a.person.name.localeCompare(b.person.name, 'ko');
   });
 }
+
+/**
+ * Sort abnormal device cases by the given key.
+ */
+export function sortDevicesByKey<T extends { deviceTag?: string; person: { name: string; address: string } }>(
+  cases: T[],
+  key: 'deviceTag' | 'name' | 'address'
+): T[] {
+  return [...cases].sort((a, b) => {
+    if (key === 'deviceTag') {
+      const ia = DEVICE_TAG_ORDER.indexOf(a.deviceTag || '');
+      const ib = DEVICE_TAG_ORDER.indexOf(b.deviceTag || '');
+      const oa = ia >= 0 ? ia : 999;
+      const ob = ib >= 0 ? ib : 999;
+      if (oa !== ob) return oa - ob;
+      return a.person.name.localeCompare(b.person.name, 'ko');
+    }
+    if (key === 'address') {
+      const da = extractDistrict(a.person.address);
+      const db = extractDistrict(b.person.address);
+      const cmp = da.localeCompare(db, 'ko');
+      if (cmp !== 0) return cmp;
+      return a.person.name.localeCompare(b.person.name, 'ko');
+    }
+    // default: name
+    return a.person.name.localeCompare(b.person.name, 'ko');
+  });
+}

@@ -6,6 +6,8 @@ import { getFilteredData } from '@/lib/dataFilters';
 
 type Screen = 'dashboard' | 'import' | 'activity' | 'outing' | 'absence' | 'device' | 'export';
 
+export type DeviceSortKey = 'deviceTag' | 'name' | 'address';
+
 interface FilteredData {
   activityMissing: CaseRecord[];
   longOuting: CaseRecord[];
@@ -22,6 +24,8 @@ interface AppState {
   stats: DashboardStats;
   updateCase: (category: 'activityMissing' | 'longOuting' | 'longAbsence' | 'abnormalDevice', id: string, updates: Partial<CaseRecord>) => void;
   resetData: () => void;
+  deviceSortKey: DeviceSortKey;
+  setDeviceSortKey: (k: DeviceSortKey) => void;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -29,6 +33,7 @@ const AppContext = createContext<AppState | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentScreen, setScreen] = useState<Screen>('dashboard');
   const [dailyData, setDailyData] = useState<DailyData>(loadDailyData);
+  const [deviceSortKey, setDeviceSortKey] = useState<DeviceSortKey>('name');
 
   useEffect(() => {
     saveDailyData(dailyData);
@@ -63,7 +68,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider value={{
       currentScreen, setScreen, dailyData, setDailyData, filtered, stats,
-      updateCase, resetData,
+      updateCase, resetData, deviceSortKey, setDeviceSortKey,
     }}>
       {children}
     </AppContext.Provider>

@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import { useAppState } from '@/context/AppContext';
+import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import GwAsFilter, { filterByGwAs } from '@/components/GwAsFilter';
+import { sortDevicesByKey } from '@/lib/addressUtils';
 import type { CaseRecord, ActionMethod, ActionResult } from '@/types/schema';
 
 const actionMethods: ActionMethod[] = ['전화확인', '방문확인', 'A/S접수', '119신고', '보호자연락', '기타'];
 const actionResults: ActionResult[] = ['확인완료', '미확인', '조치완료', '조치중', '대기'];
 
+const SORT_OPTIONS: { key: DeviceSortKey; label: string }[] = [
+  { key: 'name', label: '대상자명' },
+  { key: 'deviceTag', label: '장비이상' },
+  { key: 'address', label: '도로명주소' },
+];
+
 export default function DeviceScreen() {
-  const { filtered, updateCase } = useAppState();
+  const { filtered, updateCase, deviceSortKey, setDeviceSortKey } = useAppState();
   const [gwAs, setGwAs] = useState('');
-  const cases = filterByGwAs(filtered.abnormalDevice, gwAs);
+  const cases = sortDevicesByKey(filterByGwAs(filtered.abnormalDevice, gwAs), deviceSortKey);
 
   return (
     <div className="p-6 animate-fade-in">
@@ -18,7 +25,21 @@ export default function DeviceScreen() {
           <h2 className="text-xl font-bold text-foreground mb-1">비정상장비</h2>
           <p className="text-sm text-muted-foreground">{cases.length}건</p>
         </div>
-        <GwAsFilter cases={filtered.abnormalDevice} value={gwAs} onChange={setGwAs} />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">정렬:</span>
+            <select
+              value={deviceSortKey}
+              onChange={e => setDeviceSortKey(e.target.value as DeviceSortKey)}
+              className="text-xs px-2 py-1 border border-input rounded bg-card text-foreground"
+            >
+              {SORT_OPTIONS.map(o => (
+                <option key={o.key} value={o.key}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <GwAsFilter cases={filtered.abnormalDevice} value={gwAs} onChange={setGwAs} />
+        </div>
       </div>
 
       <div className="overflow-x-auto border border-border rounded-lg">
