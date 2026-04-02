@@ -1,7 +1,7 @@
 import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
 import { extractDistrict, sortDevicesByKey } from '@/lib/addressUtils';
-import { Printer, FileSpreadsheet } from 'lucide-react';
+import { Printer, FileSpreadsheet, ArrowUpDown } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
 const SORT_OPTIONS: { key: DeviceSortKey; label: string }[] = [
@@ -35,19 +35,7 @@ export default function ExportScreen() {
           <h2 className="text-xl font-bold text-foreground">인쇄 / 내보내기</h2>
           <p className="text-sm text-muted-foreground">일일점검현황 {dateLabel}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">비정상장비 정렬:</span>
-            <select
-              value={deviceSortKey}
-              onChange={e => setDeviceSortKey(e.target.value as DeviceSortKey)}
-              className="text-xs px-2 py-1 border border-input rounded bg-card text-foreground"
-            >
-              {SORT_OPTIONS.map(o => (
-                <option key={o.key} value={o.key}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+          <div className="flex items-center gap-3">
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-medium hover:opacity-90">
             <FileSpreadsheet className="w-4 h-4" /> Excel 내보내기
           </button>
@@ -83,7 +71,7 @@ export default function ExportScreen() {
           headerColor="bg-status-long-absence/10"
         />
 
-        <DeviceTable cases={sortedDevices} />
+        <DeviceTable cases={sortedDevices} sortKey={deviceSortKey} onSortChange={setDeviceSortKey} />
       </div>
     </div>
   );
@@ -140,7 +128,19 @@ function SectionTable({ sectionTitle, columns, cases, headerColor }: {
   );
 }
 
-function DeviceTable({ cases }: { cases: CaseRecord[] }) {
+function DeviceTable({ cases, sortKey, onSortChange }: { cases: CaseRecord[]; sortKey: DeviceSortKey; onSortChange: (k: DeviceSortKey) => void }) {
+  const SortHeader = ({ label, colKey }: { label: string; colKey: DeviceSortKey }) => (
+    <th
+      className="print-cell text-left font-semibold cursor-pointer hover:text-primary select-none"
+      onClick={() => onSortChange(colKey)}
+    >
+      <span className="inline-flex items-center gap-0.5">
+        {label}
+        <ArrowUpDown className={`w-3 h-3 no-print ${sortKey === colKey ? 'text-primary' : 'text-muted-foreground/50'}`} />
+      </span>
+    </th>
+  );
+
   return (
     <div className="border-b border-border">
       <table className="w-full text-xs border-collapse print-table">
@@ -153,10 +153,10 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell text-left font-semibold w-6">비</th>
-            <th className="print-cell text-left font-semibold">장비이상</th>
-            <th className="print-cell text-left font-semibold">대상자명</th>
+            <SortHeader label="장비이상" colKey="deviceTag" />
+            <SortHeader label="대상자명" colKey="name" />
             <th className="print-cell text-left font-semibold">생년월일</th>
-            <th className="print-cell text-left font-semibold">도로명주소</th>
+            <SortHeader label="도로명주소" colKey="address" />
             <th className="print-cell text-left font-semibold">핸드폰번호</th>
             <th className="print-cell text-left font-semibold">G/W번호</th>
             <th className="print-cell text-left font-semibold">차수</th>
