@@ -128,7 +128,19 @@ function SectionTable({ sectionTitle, columns, cases, headerColor }: {
   );
 }
 
-function DeviceTable({ cases }: { cases: CaseRecord[] }) {
+function DeviceTable({ cases, sortKey, onSortChange }: { cases: CaseRecord[]; sortKey: DeviceSortKey; onSortChange: (k: DeviceSortKey) => void }) {
+  const SortHeader = ({ label, colKey }: { label: string; colKey: DeviceSortKey }) => (
+    <th
+      className="print-cell text-left font-semibold cursor-pointer hover:text-primary select-none"
+      onClick={() => onSortChange(colKey)}
+    >
+      <span className="inline-flex items-center gap-0.5">
+        {label}
+        <ArrowUpDown className={`w-3 h-3 no-print ${sortKey === colKey ? 'text-primary' : 'text-muted-foreground/50'}`} />
+      </span>
+    </th>
+  );
+
   return (
     <div className="border-b border-border">
       <table className="w-full text-xs border-collapse print-table">
@@ -141,10 +153,10 @@ function DeviceTable({ cases }: { cases: CaseRecord[] }) {
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell text-left font-semibold w-6">비</th>
-            <th className="print-cell text-left font-semibold">장비이상</th>
-            <th className="print-cell text-left font-semibold">대상자명</th>
+            <SortHeader label="장비이상" colKey="deviceTag" />
+            <SortHeader label="대상자명" colKey="name" />
             <th className="print-cell text-left font-semibold">생년월일</th>
-            <th className="print-cell text-left font-semibold">도로명주소</th>
+            <SortHeader label="도로명주소" colKey="address" />
             <th className="print-cell text-left font-semibold">핸드폰번호</th>
             <th className="print-cell text-left font-semibold">G/W번호</th>
             <th className="print-cell text-left font-semibold">차수</th>
