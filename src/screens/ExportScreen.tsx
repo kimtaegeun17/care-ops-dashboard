@@ -71,7 +71,7 @@ export default function ExportScreen() {
           headerColor="bg-status-long-absence/10"
         />
 
-        <DeviceTable cases={sortedDevices} />
+        <DeviceTable cases={sortedDevices} sortKey={deviceSortKey} onSortChange={setDeviceSortKey} />
       </div>
     </div>
   );
