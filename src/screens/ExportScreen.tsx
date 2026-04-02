@@ -1,7 +1,7 @@
 import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
 import { extractDistrict, sortDevicesByKey } from '@/lib/addressUtils';
-import { Printer, FileSpreadsheet } from 'lucide-react';
+import { Printer, FileSpreadsheet, ArrowUpDown } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
 const SORT_OPTIONS: { key: DeviceSortKey; label: string }[] = [
