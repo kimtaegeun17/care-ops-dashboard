@@ -35,19 +35,7 @@ export default function ExportScreen() {
           <h2 className="text-xl font-bold text-foreground">인쇄 / 내보내기</h2>
           <p className="text-sm text-muted-foreground">일일점검현황 {dateLabel}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">비정상장비 정렬:</span>
-            <select
-              value={deviceSortKey}
-              onChange={e => setDeviceSortKey(e.target.value as DeviceSortKey)}
-              className="text-xs px-2 py-1 border border-input rounded bg-card text-foreground"
-            >
-              {SORT_OPTIONS.map(o => (
-                <option key={o.key} value={o.key}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+          <div className="flex items-center gap-3">
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-medium hover:opacity-90">
             <FileSpreadsheet className="w-4 h-4" /> Excel 내보내기
           </button>
