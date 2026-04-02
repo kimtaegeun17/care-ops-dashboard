@@ -1,16 +1,22 @@
-import { useAppState } from '@/context/AppContext';
+import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
-import { extractDistrict } from '@/lib/addressUtils';
+import { extractDistrict, sortDevicesByKey } from '@/lib/addressUtils';
 import { Printer, FileSpreadsheet } from 'lucide-react';
 import type { CaseRecord } from '@/types/schema';
 
+const SORT_OPTIONS: { key: DeviceSortKey; label: string }[] = [
+  { key: 'name', label: '대상자명' },
+  { key: 'deviceTag', label: '장비이상' },
+  { key: 'address', label: '도로명주소' },
+];
+
 export default function ExportScreen() {
-  const { filtered } = useAppState();
+  const { filtered, deviceSortKey, setDeviceSortKey } = useAppState();
   const today = new Date();
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const dateLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}.(${dayNames[today.getDay()]})`;
 
-  const sortedDevices = [...filtered.abnormalDevice].sort((a, b) => a.person.name.localeCompare(b.person.name, 'ko'));
+  const sortedDevices = sortDevicesByKey(filtered.abnormalDevice, deviceSortKey);
 
   const handleExport = () => {
     exportFullReport(
@@ -29,7 +35,19 @@ export default function ExportScreen() {
           <h2 className="text-xl font-bold text-foreground">인쇄 / 내보내기</h2>
           <p className="text-sm text-muted-foreground">일일점검현황 {dateLabel}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">비정상장비 정렬:</span>
+            <select
+              value={deviceSortKey}
+              onChange={e => setDeviceSortKey(e.target.value as DeviceSortKey)}
+              className="text-xs px-2 py-1 border border-input rounded bg-card text-foreground"
+            >
+              {SORT_OPTIONS.map(o => (
+                <option key={o.key} value={o.key}>{o.label}</option>
+              ))}
+            </select>
+          </div>
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-medium hover:opacity-90">
             <FileSpreadsheet className="w-4 h-4" /> Excel 내보내기
           </button>
@@ -122,7 +140,6 @@ function SectionTable({ sectionTitle, columns, cases, headerColor }: {
   );
 }
 
-/** 비정상장비: with 도로명주소(읍면), sorted by district */
 function DeviceTable({ cases }: { cases: CaseRecord[] }) {
   return (
     <div className="border-b border-border">
