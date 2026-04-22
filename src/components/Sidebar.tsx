@@ -29,7 +29,14 @@ export default function Sidebar() {
         <h1 className="text-sm font-bold text-sidebar-primary-foreground leading-tight">
           일일점검현황
         </h1>
-        <p className="text-[10px] text-sidebar-muted mt-0.5">로컬 오프라인 앱</p>
+        <p className="text-[10px] text-sidebar-foreground mt-1 font-semibold leading-tight">
+          양평군노인복지관
+          <br />
+          지역복지팀 TG
+        </p>
+        <p className="text-[10px] text-sidebar-muted mt-1">
+          로컬 오프라인 앱 <span className="opacity-70">v1.0.0</span>
+        </p>
       </div>
       <nav className="flex-1 py-2">
         {navItems.map(item => {
