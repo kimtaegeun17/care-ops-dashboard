@@ -283,7 +283,6 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
             <th className="print-cell text-muted-foreground text-left" colSpan={4}>대상자정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={3}>장비정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>이상정보</th>
-            <th className="print-cell w-8 no-print"></th>
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell text-left font-semibold w-6">비</th>
