@@ -84,9 +84,14 @@ export default function ExportScreen() {
         </div>
         <div className="flex items-center gap-3">
           {totalHidden > 0 && (
-            <button onClick={undoAll} className="flex items-center gap-1.5 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:opacity-90">
-              <Undo2 className="w-4 h-4" /> 전체 되돌리기
-            </button>
+            <>
+              <button onClick={undoLast} className="flex items-center gap-1.5 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-90" title="Ctrl+Z">
+                <Undo2 className="w-4 h-4" /> 마지막 되돌리기 ({totalHidden})
+              </button>
+              <button onClick={undoAll} className="flex items-center gap-1.5 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:opacity-90">
+                <Undo2 className="w-4 h-4" /> 전체 되돌리기
+              </button>
+            </>
           )}
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-medium hover:opacity-90">
             <FileSpreadsheet className="w-4 h-4" /> Excel 내보내기
