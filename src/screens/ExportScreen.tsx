@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
 import { extractDistrict, sortDevicesByKey } from '@/lib/addressUtils';
