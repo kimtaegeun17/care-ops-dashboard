@@ -203,10 +203,10 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
             <th className="print-cell w-6"></th>
             <th className="print-cell w-6"></th>
             {columns.map((col, i) => (
-              <>
-                <th key={i} className="print-cell text-left font-semibold text-foreground whitespace-nowrap">{col}</th>
-                {i === 0 && <th key="actions" className="print-cell w-8 no-print"></th>}
-              </>
+              <th key={i} className="print-cell text-left font-semibold text-foreground whitespace-nowrap">
+                {col}
+                {i === 0 && <span className="no-print inline-block w-6"></span>}
+              </th>
             ))}
           </tr>
         </thead>
