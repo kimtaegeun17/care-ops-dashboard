@@ -21,16 +21,44 @@ export default function ExportScreen() {
     abnormalDevice: [],
   });
 
+  // 전역 삭제 히스토리 (가장 최근 삭제가 마지막) — 순차적 되돌리기용
+  const [history, setHistory] = useState<{ section: SectionKey; id: string }[]>([]);
+
   const hideRow = (section: SectionKey, id: string) => {
     setHidden(prev => ({ ...prev, [section]: [...prev[section], id] }));
+    setHistory(prev => [...prev, { section, id }]);
   };
 
   const undoRow = (section: SectionKey) => {
-    setHidden(prev => ({ ...prev, [section]: prev[section].slice(0, -1) }));
+    setHidden(prev => {
+      const list = prev[section];
+      if (list.length === 0) return prev;
+      const lastId = list[list.length - 1];
+      setHistory(h => {
+        const idx = [...h].reverse().findIndex(e => e.section === section && e.id === lastId);
+        if (idx === -1) return h;
+        const realIdx = h.length - 1 - idx;
+        return [...h.slice(0, realIdx), ...h.slice(realIdx + 1)];
+      });
+      return { ...prev, [section]: list.slice(0, -1) };
+    });
   };
 
-  const totalHidden = Object.values(hidden).reduce((sum, arr) => sum + arr.length, 0);
-  const undoAll = () => setHidden({ activityMissing: [], longOuting: [], longAbsence: [], abnormalDevice: [] });
+  // 전역 마지막 삭제 되돌리기 (어느 섹션이든 가장 최근 삭제부터 한 번에 하나씩)
+  const undoLast = () => {
+    setHistory(prev => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      setHidden(h => ({ ...h, [last.section]: h[last.section].filter(id => id !== last.id) }));
+      return prev.slice(0, -1);
+    });
+  };
+
+  const totalHidden = history.length;
+  const undoAll = () => {
+    setHidden({ activityMissing: [], longOuting: [], longAbsence: [], abnormalDevice: [] });
+    setHistory([]);
+  };
 
   const visibleActivity = useMemo(() => filtered.activityMissing.filter(c => !hidden.activityMissing.includes(c.id)), [filtered.activityMissing, hidden.activityMissing]);
   const visibleOuting = useMemo(() => filtered.longOuting.filter(c => !hidden.longOuting.includes(c.id)), [filtered.longOuting, hidden.longOuting]);
