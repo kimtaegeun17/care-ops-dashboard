@@ -198,15 +198,16 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
             <th className="print-cell text-muted-foreground text-left" colSpan={4}>대상자정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>장비정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>감지정보</th>
-            <th className="print-cell w-8 no-print"></th>
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell w-6"></th>
             <th className="print-cell w-6"></th>
             {columns.map((col, i) => (
-              <th key={i} className="print-cell text-left font-semibold text-foreground whitespace-nowrap">{col}</th>
+              <>
+                <th key={i} className="print-cell text-left font-semibold text-foreground whitespace-nowrap">{col}</th>
+                {i === 0 && <th key="actions" className="print-cell w-8 no-print"></th>}
+              </>
             ))}
-            <th className="print-cell w-8 no-print"></th>
           </tr>
         </thead>
         <tbody>
