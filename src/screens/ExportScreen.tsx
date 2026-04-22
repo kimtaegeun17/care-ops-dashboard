@@ -198,7 +198,6 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
             <th className="print-cell text-muted-foreground text-left" colSpan={4}>대상자정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>장비정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>감지정보</th>
-            <th className="print-cell w-8 no-print"></th>
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell w-6"></th>
@@ -206,7 +205,6 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
             {columns.map((col, i) => (
               <th key={i} className="print-cell text-left font-semibold text-foreground whitespace-nowrap">{col}</th>
             ))}
-            <th className="print-cell w-8 no-print"></th>
           </tr>
         </thead>
         <tbody>
@@ -217,7 +215,18 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
               <tr key={c.id} className={i % 2 === 0 ? 'group' : 'bg-muted/20 group'}>
                 <td className="print-cell"></td>
                 <td className="print-cell text-center">{i + 1}</td>
-                <td className="print-cell font-semibold whitespace-nowrap">{c.person.name}</td>
+                <td className="print-cell font-semibold whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5">
+                    {c.person.name}
+                    <button
+                      onClick={() => onDelete(c.id)}
+                      className="no-print opacity-40 group-hover:opacity-100 hover:text-destructive transition-opacity"
+                      title="이 행 삭제"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                </td>
                 <td className="print-cell whitespace-nowrap">{c.person.birthDate}</td>
                 <td className="print-cell whitespace-nowrap">{extractDistrict(c.person.address)}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.phone}</td>
@@ -226,15 +235,6 @@ function SectionTable({ sectionTitle, columns, cases, headerColor, hiddenCount, 
                 <td className="print-cell whitespace-nowrap">{c.gwAs || ''}</td>
                 <td className="print-cell whitespace-nowrap">{c.detectedTime}</td>
                 <td className="print-cell font-medium whitespace-nowrap">{c.elapsedTime}</td>
-                <td className="print-cell no-print text-center">
-                  <button
-                    onClick={() => onDelete(c.id)}
-                    className="opacity-40 group-hover:opacity-100 hover:text-destructive transition-opacity"
-                    title="이 행 삭제"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
               </tr>
             ))
           )}
@@ -283,7 +283,6 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
             <th className="print-cell text-muted-foreground text-left" colSpan={4}>대상자정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={3}>장비정보</th>
             <th className="print-cell text-muted-foreground text-left" colSpan={2}>이상정보</th>
-            <th className="print-cell w-8 no-print"></th>
           </tr>
           <tr className="bg-muted/50">
             <th className="print-cell text-left font-semibold w-6">비</th>
@@ -297,7 +296,7 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
             <th className="print-cell text-left font-semibold">G/W AS</th>
             <th className="print-cell text-left font-semibold">시작시각</th>
             <th className="print-cell text-left font-semibold">지속시간</th>
-            <th className="print-cell w-8 no-print"></th>
+            
           </tr>
         </thead>
         <tbody>
@@ -308,7 +307,18 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
               <tr key={c.id} className={i % 2 === 0 ? 'group' : 'bg-muted/20 group'}>
                 <td className="print-cell text-center font-bold text-info">비</td>
                 <td className="print-cell whitespace-nowrap">{c.deviceTag || '-'}</td>
-                <td className="print-cell font-semibold whitespace-nowrap">{c.person.name}</td>
+                <td className="print-cell font-semibold whitespace-nowrap">
+                  <span className="inline-flex items-center gap-1.5">
+                    {c.person.name}
+                    <button
+                      onClick={() => onDelete(c.id)}
+                      className="no-print opacity-40 group-hover:opacity-100 hover:text-destructive transition-opacity"
+                      title="이 행 삭제"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                </td>
                 <td className="print-cell whitespace-nowrap">{c.person.birthDate}</td>
                 <td className="print-cell whitespace-nowrap">{extractDistrict(c.person.address)}</td>
                 <td className="print-cell whitespace-nowrap">{c.person.phone}</td>
@@ -317,15 +327,6 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
                 <td className="print-cell whitespace-nowrap">{c.gwAs || ''}</td>
                 <td className="print-cell whitespace-nowrap">{c.detectedTime}</td>
                 <td className="print-cell font-medium whitespace-nowrap">{c.elapsedTime}</td>
-                <td className="print-cell no-print text-center">
-                  <button
-                    onClick={() => onDelete(c.id)}
-                    className="opacity-40 group-hover:opacity-100 hover:text-destructive transition-opacity"
-                    title="이 행 삭제"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
               </tr>
             ))
           )}
