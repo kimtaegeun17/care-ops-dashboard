@@ -71,9 +71,7 @@ export default function ExportScreen() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-    setHidden({ activityMissing: [], longOuting: [], longAbsence: [], abnormalDevice: [] });
-    setHistory([]);
-  };
+
 
   const visibleActivity = useMemo(() => filtered.activityMissing.filter(c => !hidden.activityMissing.includes(c.id)), [filtered.activityMissing, hidden.activityMissing]);
   const visibleOuting = useMemo(() => filtered.longOuting.filter(c => !hidden.longOuting.includes(c.id)), [filtered.longOuting, hidden.longOuting]);
