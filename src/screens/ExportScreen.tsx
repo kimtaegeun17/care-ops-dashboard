@@ -296,7 +296,7 @@ function DeviceTable({ cases, sortKey, onSortChange, hiddenCount, onDelete, onUn
             <th className="print-cell text-left font-semibold">G/W AS</th>
             <th className="print-cell text-left font-semibold">시작시각</th>
             <th className="print-cell text-left font-semibold">지속시간</th>
-            <th className="print-cell w-8 no-print"></th>
+            
           </tr>
         </thead>
         <tbody>
