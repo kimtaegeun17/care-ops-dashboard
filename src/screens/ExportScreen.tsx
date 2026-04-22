@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppState, type DeviceSortKey } from '@/context/AppContext';
 import { exportFullReport, printTable } from '@/lib/exportEngine';
 import { extractDistrict, sortDevicesByKey } from '@/lib/addressUtils';
@@ -21,16 +21,57 @@ export default function ExportScreen() {
     abnormalDevice: [],
   });
 
+  // 전역 삭제 히스토리 (가장 최근 삭제가 마지막) — 순차적 되돌리기용
+  const [history, setHistory] = useState<{ section: SectionKey; id: string }[]>([]);
+
   const hideRow = (section: SectionKey, id: string) => {
     setHidden(prev => ({ ...prev, [section]: [...prev[section], id] }));
+    setHistory(prev => [...prev, { section, id }]);
   };
 
   const undoRow = (section: SectionKey) => {
-    setHidden(prev => ({ ...prev, [section]: prev[section].slice(0, -1) }));
+    setHidden(prev => {
+      const list = prev[section];
+      if (list.length === 0) return prev;
+      const lastId = list[list.length - 1];
+      setHistory(h => {
+        const idx = [...h].reverse().findIndex(e => e.section === section && e.id === lastId);
+        if (idx === -1) return h;
+        const realIdx = h.length - 1 - idx;
+        return [...h.slice(0, realIdx), ...h.slice(realIdx + 1)];
+      });
+      return { ...prev, [section]: list.slice(0, -1) };
+    });
   };
 
-  const totalHidden = Object.values(hidden).reduce((sum, arr) => sum + arr.length, 0);
-  const undoAll = () => setHidden({ activityMissing: [], longOuting: [], longAbsence: [], abnormalDevice: [] });
+  // 전역 마지막 삭제 되돌리기 (어느 섹션이든 가장 최근 삭제부터 한 번에 하나씩)
+  const undoLast = () => {
+    setHistory(prev => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      setHidden(h => ({ ...h, [last.section]: h[last.section].filter(id => id !== last.id) }));
+      return prev.slice(0, -1);
+    });
+  };
+
+  const totalHidden = history.length;
+  const undoAll = () => {
+    setHidden({ activityMissing: [], longOuting: [], longAbsence: [], abnormalDevice: [] });
+    setHistory([]);
+  };
+
+  // Ctrl+Z / Cmd+Z 로 마지막 삭제 되돌리기
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undoLast();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
 
   const visibleActivity = useMemo(() => filtered.activityMissing.filter(c => !hidden.activityMissing.includes(c.id)), [filtered.activityMissing, hidden.activityMissing]);
   const visibleOuting = useMemo(() => filtered.longOuting.filter(c => !hidden.longOuting.includes(c.id)), [filtered.longOuting, hidden.longOuting]);
@@ -56,9 +97,14 @@ export default function ExportScreen() {
         </div>
         <div className="flex items-center gap-3">
           {totalHidden > 0 && (
-            <button onClick={undoAll} className="flex items-center gap-1.5 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:opacity-90">
-              <Undo2 className="w-4 h-4" /> 전체 되돌리기
-            </button>
+            <>
+              <button onClick={undoLast} className="flex items-center gap-1.5 px-3 py-2 bg-secondary text-secondary-foreground rounded-lg text-sm font-medium hover:opacity-90" title="Ctrl+Z">
+                <Undo2 className="w-4 h-4" /> 마지막 되돌리기 ({totalHidden})
+              </button>
+              <button onClick={undoAll} className="flex items-center gap-1.5 px-3 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:opacity-90">
+                <Undo2 className="w-4 h-4" /> 전체 되돌리기
+              </button>
+            </>
           )}
           <button onClick={handleExport} className="flex items-center gap-1.5 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-medium hover:opacity-90">
             <FileSpreadsheet className="w-4 h-4" /> Excel 내보내기
